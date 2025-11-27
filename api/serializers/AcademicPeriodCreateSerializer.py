@@ -30,10 +30,9 @@ class AcademicPeriodCreateSerializer(serializers.ModelSerializer):
                 offering, created = CourseOffering.objects.get_or_create(
                     course=curso,
                     academic_period=period,
-                    offering_type="normal",
-                    defaults={"capacity": 0}
+                    offering_type="normal"
                 )
                 # Crear grupo por defecto si no existe
                 if not CourseGroup.objects.filter(course=curso).exists():
-                    CourseGroup.objects.create(course=curso, code="1", capacity=0)
+                    CourseGroup.objects.create(course=curso, code="1")
         return period

@@ -7,4 +7,4 @@ class CourseGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CourseGroup
-        fields = ['id', 'course_code', 'course_name', 'code', 'capacity']
+        fields = ['id', 'course_code', 'course_name', 'code']

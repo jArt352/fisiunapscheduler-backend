@@ -84,7 +84,6 @@ class CourseOffering(models.Model):
 	course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='offerings')
 	academic_period = models.ForeignKey('AcademicPeriod', on_delete=models.SET_NULL, null=True, blank=True, related_name='offerings')
 	offering_type = models.CharField(max_length=20, choices=OFFERING_TYPES, default='normal')
-	capacity = models.PositiveIntegerField(default=0)
 	notes = models.TextField(blank=True)
 
 	class Meta:
@@ -235,30 +234,14 @@ def courseconfig_pre_save(sender, instance, **kwargs):
 
 @receiver(post_save, sender=CourseGroupConfig)
 def courseconfig_post_save(sender, instance, created, **kwargs):
-	old = getattr(instance, '_old_num_groups', None)
 	new = instance.num_groups
 	course = instance.course
 	with transaction.atomic():
-		if created:
-			for i in range(1, new + 1):
-				CourseGroup.objects.create(course=course, code=str(i))
-			return
-
-		if old is None:
-			return
-
-		if new > old:
-			for i in range(old + 1, new + 1):
-				CourseGroup.objects.get_or_create(course=course, code=str(i))
-		elif new < old:
-			groups = CourseGroup.objects.filter(course=course)
-			for g in groups:
-				try:
-					code_int = int(g.code)
-				except Exception:
-					continue
-				if code_int > new:
-					g.delete()
+		# Eliminar todos los grupos existentes para evitar duplicados
+		CourseGroup.objects.filter(course=course).delete()
+		# Crear los grupos nuevos
+		for i in range(1, new + 1):
+			CourseGroup.objects.create(course=course, code=str(i))
 
 
 

@@ -16,7 +16,7 @@ class CourseOfferingGroupUpdateSerializer(serializers.ModelSerializer):
         # Crear o eliminar grupos para igualar a num_groups
         if num_groups > current:
             for i in range(current + 1, num_groups + 1):
-                CourseGroup.objects.create(course=course, code=str(i), capacity=0)
+                CourseGroup.objects.create(course=course, code=str(i))
         elif num_groups < current:
             groups = course.groups.order_by('-code')[:current - num_groups]
             for g in groups:

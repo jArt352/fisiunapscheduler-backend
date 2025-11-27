@@ -16,3 +16,4 @@ from .CourseOfferingListViewSet import CourseOfferingListViewSet
 from .CourseOfferingGroupUpdateViewSet import CourseOfferingGroupUpdateViewSet
 from .CourseOfferingDetailViewSet import CourseOfferingDetailViewSet
 from .CourseGroupListViewSet import CourseGroupListViewSet
+from .CourseGroupConfigViewSet import CourseGroupConfigViewSet

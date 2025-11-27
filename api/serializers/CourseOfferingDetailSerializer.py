@@ -12,18 +12,14 @@ class CourseOfferingDetailSerializer(serializers.ModelSerializer):
         model = CourseOffering
         fields = [
             'id', 'course_code', 'course_name', 'credits', 'cycle',
-            'offering_type', 'academic_period', 'capacity', 'groups'
+            'offering_type', 'academic_period', 'groups'
         ]
 
     def get_groups(self, obj):
         return [
             {
                 'id': g.id,
-                'code': g.code,
-                'capacity': g.capacity,
-                'teacher': g.teacher_id,
-                'room': g.room_id,
-                'shift': g.shift
+                'code': g.code
             }
             for g in obj.course.groups.all()
         ]

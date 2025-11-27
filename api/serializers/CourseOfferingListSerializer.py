@@ -12,7 +12,7 @@ class CourseOfferingListSerializer(serializers.ModelSerializer):
         model = CourseOffering
         fields = [
             'id', 'course_code', 'course_name', 'credits', 'cycle',
-            'offering_type', 'academic_period', 'capacity', 'num_groups'
+            'offering_type', 'academic_period', 'num_groups'
         ]
 
     def get_num_groups(self, obj):
