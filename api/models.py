@@ -138,6 +138,27 @@ class CourseSessionPolicy(models.Model):
 		# si hay más de un tipo distinto, consideramos que están separadas
 		return len([t for t in types if t]) <= 1
 
+class CourseShiftPreference(models.Model):
+	"""Preferencia de turno para un curso (mañana, tarde, noche)."""
+	SHIFT_CHOICES = [
+		("morning", "Mañana"),
+		("afternoon", "Tarde"),
+		("night", "Noche"),
+	]
+	PREFERENCE_CHOICES = [
+		("prefer", "Prefiere"),
+		("avoid", "Evitar"),
+	]
+	course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='shift_preferences')
+	shift = models.CharField(max_length=20, choices=SHIFT_CHOICES)
+	preference = models.CharField(max_length=10, choices=PREFERENCE_CHOICES, default='prefer')
+
+	class Meta:
+		unique_together = (('course', 'shift'),)
+
+	def __str__(self):
+		return f"{self.course.code} - {self.get_shift_display()} ({self.get_preference_display()})"
+
 
 class CourseDayPreference(models.Model):
 	"""Preferencias de día para un curso. Un curso puede tener varias preferencias (por ejemplo lunes y miércoles)."""
