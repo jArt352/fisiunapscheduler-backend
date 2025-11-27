@@ -199,10 +199,6 @@ class CourseGroup(models.Model):
 	"""Representa un grupo/ sección de un curso (varios grupos por curso)."""
 	course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='groups')
 	code = models.CharField(max_length=20)
-	capacity = models.PositiveIntegerField(null=True, blank=True)
-	teacher = models.ForeignKey('Teacher', on_delete=models.SET_NULL, null=True, blank=True, related_name='groups')
-	room = models.ForeignKey('Room', on_delete=models.SET_NULL, null=True, blank=True, related_name='groups')
-	shift = models.CharField(max_length=50, blank=True)
 
 	class Meta:
 		unique_together = (('course', 'code'),)
@@ -210,15 +206,6 @@ class CourseGroup(models.Model):
 	def __str__(self):
 		return f"{self.course.code}-{self.code}"
 
-	@property
-	def effective_capacity(self):
-		"""Devuelve la capacidad efectiva del grupo: primero el campo `capacity` del grupo
-		si está definido, o la capacidad del `room` si existe, o None en último caso."""
-		if self.capacity:
-			return self.capacity
-		if self.room:
-			return self.room.capacity
-		return None
 
 
 class CourseGroupConfig(models.Model):
@@ -254,7 +241,7 @@ def courseconfig_post_save(sender, instance, created, **kwargs):
 	with transaction.atomic():
 		if created:
 			for i in range(1, new + 1):
-				CourseGroup.objects.create(course=course, code=str(i), capacity=0)
+				CourseGroup.objects.create(course=course, code=str(i))
 			return
 
 		if old is None:
@@ -262,7 +249,7 @@ def courseconfig_post_save(sender, instance, created, **kwargs):
 
 		if new > old:
 			for i in range(old + 1, new + 1):
-				CourseGroup.objects.get_or_create(course=course, code=str(i), defaults={'capacity': 0})
+				CourseGroup.objects.get_or_create(course=course, code=str(i))
 		elif new < old:
 			groups = CourseGroup.objects.filter(course=course)
 			for g in groups:

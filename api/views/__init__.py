@@ -5,10 +5,14 @@ from .JWTAuthViewSet import JWTAuthViewSet
 from .PlanImportViewSet import PlanImportViewSet
 from .AcademicPeriodListViewSet import AcademicPeriodListViewSet
 from .AcademicPeriodUpdateViewSet import AcademicPeriodUpdateViewSet
-
+from .ShiftViewSet import ShiftViewSet
 from .PlanListViewSet import PlanListViewSet
 from .SchoolViewSet import SchoolViewSet
 from .CourseUpdateViewSet import CourseUpdateViewSet
 from .CourseViewSet import CourseViewSet
 from .PlanAdminViewSet import PlanAdminViewSet
 from .AcademicPeriodCreateViewSet import AcademicPeriodCreateViewSet
+from .CourseOfferingListViewSet import CourseOfferingListViewSet
+from .CourseOfferingGroupUpdateViewSet import CourseOfferingGroupUpdateViewSet
+from .CourseOfferingDetailViewSet import CourseOfferingDetailViewSet
+from .CourseGroupListViewSet import CourseGroupListViewSet

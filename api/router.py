@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from api.views import PersonCreateViewSet, GroupViewSet, AuthViewSet, JWTAuthViewSet, PlanImportViewSet, PlanListViewSet, SchoolViewSet, CourseUpdateViewSet, CourseViewSet, PlanAdminViewSet, AcademicPeriodCreateViewSet, AcademicPeriodListViewSet, AcademicPeriodUpdateViewSet
+from api.views import PersonCreateViewSet, GroupViewSet, AuthViewSet, JWTAuthViewSet, PlanImportViewSet, PlanListViewSet, SchoolViewSet, CourseUpdateViewSet, CourseViewSet, PlanAdminViewSet, AcademicPeriodCreateViewSet, AcademicPeriodListViewSet, AcademicPeriodUpdateViewSet, ShiftViewSet, CourseOfferingListViewSet, CourseOfferingGroupUpdateViewSet, CourseOfferingDetailViewSet, CourseGroupListViewSet
 
 router = DefaultRouter()
 router.register(r'persons/create', PersonCreateViewSet, basename='person-create')
@@ -16,3 +16,8 @@ router.register(r'plans-admin', PlanAdminViewSet, basename='plans-admin')
 router.register(r'academic-periods/create', AcademicPeriodCreateViewSet, basename='academic-periods-create')
 router.register(r'academic-periods', AcademicPeriodListViewSet, basename='academic-periods')
 router.register(r'academic-periods/update', AcademicPeriodUpdateViewSet, basename='academic-periods-update')
+router.register(r'shifts', ShiftViewSet, basename='shifts')
+router.register(r'course-offerings', CourseOfferingListViewSet, basename='course-offerings')
+router.register(r'course-offerings/groups', CourseOfferingGroupUpdateViewSet, basename='course-offerings-groups')
+router.register(r'course-offerings/detail', CourseOfferingDetailViewSet, basename='course-offerings-detail')
+router.register(r'course-groups', CourseGroupListViewSet, basename='course-groups')
