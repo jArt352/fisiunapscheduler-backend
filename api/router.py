@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from api.views import PersonCreateViewSet, GroupViewSet, AuthViewSet, JWTAuthViewSet, PlanImportViewSet, PlanListViewSet, SchoolViewSet, CourseUpdateViewSet, CourseViewSet, PlanAdminViewSet
+from api.views import PersonCreateViewSet, GroupViewSet, AuthViewSet, JWTAuthViewSet, PlanImportViewSet, PlanListViewSet, SchoolViewSet, CourseUpdateViewSet, CourseViewSet, PlanAdminViewSet, AcademicPeriodCreateViewSet, AcademicPeriodListViewSet
 
 router = DefaultRouter()
 router.register(r'persons/create', PersonCreateViewSet, basename='person-create')
@@ -13,3 +13,5 @@ router.register(r'schools', SchoolViewSet, basename='schools')
 router.register(r'courses/update', CourseUpdateViewSet, basename='courses-update')
 router.register(r'courses', CourseViewSet, basename='courses')
 router.register(r'plans-admin', PlanAdminViewSet, basename='plans-admin')
+router.register(r'academic-periods/create', AcademicPeriodCreateViewSet, basename='academic-periods-create')
+router.register(r'academic-periods', AcademicPeriodListViewSet, basename='academic-periods')

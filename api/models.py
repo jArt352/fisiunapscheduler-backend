@@ -8,6 +8,7 @@ from django.contrib.auth.models import Group
 
 
 # Apertura de periodo y fases
+
 class AcademicPeriod(models.Model):
 	PERIOD_CHOICES = [
 		("I", "I"),
@@ -16,24 +17,18 @@ class AcademicPeriod(models.Model):
 	]
 	year = models.PositiveIntegerField()
 	period = models.CharField(max_length=4, choices=PERIOD_CHOICES)
-	is_closed = models.BooleanField(default=False)
+	created_at = models.DateTimeField("Creado el", auto_now_add=True)
+	# Etapa de creación de horarios
+	start_schedule_creation = models.DateTimeField("Inicio de creación de horarios")
+	end_schedule_creation = models.DateTimeField("Fin de creación de horarios")
+	# El cierre del periodo puede quedar nulo
+	end_date = models.DateTimeField("Cierre de periodo", null=True, blank=True)
 
 	def __str__(self):
 		return f"{self.year} - {self.period}"
 
-class PeriodPhase(models.Model):
-	PHASE_CHOICES = [
-		("configuracion", "Etapa de configuración"),
-		("creacion_horarios", "Etapa de creación de horarios"),
-		("cambios", "Etapa de cambios"),
-	]
-	academic_period = models.ForeignKey('AcademicPeriod', on_delete=models.CASCADE, related_name='phases')
-	phase = models.CharField(max_length=30, choices=PHASE_CHOICES)
-	start_datetime = models.DateTimeField()
-	end_datetime = models.DateTimeField(blank=True, null=True)
 
-	def __str__(self):
-		return f"{self.academic_period} - {self.get_phase_display()}"
+## Eliminado PeriodPhase: ahora solo se usan los campos de AcademicPeriod
 
 
 class Site(models.Model):
