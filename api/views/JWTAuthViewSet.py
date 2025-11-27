@@ -35,7 +35,8 @@ class JWTAuthViewSet(viewsets.ViewSet):
             secure=secure,
             samesite='Lax',
             max_age=max_age,
-            path='/api/auth/refresh/'
+            # ensure cookie path matches the refresh/logout endpoints
+            path='/api/jwt/refresh/'
         )
 
     @action(detail=False, methods=['post'])
@@ -69,7 +70,8 @@ class JWTAuthViewSet(viewsets.ViewSet):
         try:
             person = Person.objects.get(user=user)
             response.data['person_id'] = person.id
-            response.data['roles'] = [{'id': g.id, 'name': g.name} for g in person.roles.all()]
+            # return roles as an array of role names (strings)
+            response.data['roles'] = [g.name for g in person.roles.all()]
             # include person details for frontend convenience
             profile_image = None
             try:
@@ -144,7 +146,7 @@ class JWTAuthViewSet(viewsets.ViewSet):
                     'middle_name': person.middle_name,
                     'profile_image': profile_image,
                 },
-                'roles': [{'id': g.id, 'name': g.name} for g in person.roles.all()]
+                'roles': [g.name for g in person.roles.all()]
             }
             return Response(data, status=status.HTTP_200_OK)
         except Person.DoesNotExist:
@@ -166,5 +168,5 @@ class JWTAuthViewSet(viewsets.ViewSet):
 
         response = Response({'detail': 'Sesión cerrada correctamente.'}, status=status.HTTP_200_OK)
         # delete cookie
-        response.delete_cookie(COOKIE_NAME, path='/api/auth/refresh/')
+        response.delete_cookie(COOKIE_NAME, path='/api/jwt/refresh/')
         return response
