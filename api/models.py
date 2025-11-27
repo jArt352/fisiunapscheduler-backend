@@ -57,9 +57,11 @@ class Room(models.Model):
 	def __str__(self):
 		return f"{self.name} ({self.get_room_type_display()}) - {self.site}"
 
+
 class Course(models.Model):
 	code = models.CharField(max_length=20, unique=True)
 	name = models.CharField(max_length=200)
+	credits = models.PositiveIntegerField(default=0)
 	cycle = models.PositiveIntegerField()
 	practical_hours = models.PositiveIntegerField(default=0)
 	theoretical_hours = models.PositiveIntegerField(default=0)
@@ -277,12 +279,14 @@ def courseconfig_post_save(sender, instance, created, **kwargs):
 					g.delete()
 
 
+
 class Plan(models.Model):
 	name = models.CharField(max_length=200)
 	description = models.TextField(blank=True)
 	school = models.ForeignKey('School', on_delete=models.CASCADE, related_name='plans')
 	start_year = models.PositiveIntegerField()
 	end_year = models.PositiveIntegerField(blank=True, null=True)
+	is_active = models.BooleanField(default=True)
 
 	def __str__(self):
 		return f"{self.name} ({self.school})"
