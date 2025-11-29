@@ -1,3 +1,4 @@
+
 from django.db import models
 from django.db import transaction
 from django.db.models.signals import pre_save, post_save
@@ -414,3 +415,5 @@ class Shift(models.Model):
 
 	def __str__(self):
 		return f"{self.get_name_display()} ({self.start_time.strftime('%H:%M')}-{self.end_time.strftime('%H:%M')})"
+
+## Modelo CourseTeacherPreferenceRequest eliminado

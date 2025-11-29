@@ -25,17 +25,21 @@ class JWTAuthViewSet(viewsets.ViewSet):
         return [IsAuthenticated()]
 
     def _set_refresh_cookie(self, response, refresh_token):
-        # set cookie parameters
-        secure = not settings.DEBUG
+        # Calculamos el tiempo de vida
         max_age = int(settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'].total_seconds())
+        
+        # CAMBIO CRÍTICO AQUÍ 👇
+        # Si settings.DEBUG es True (modo desarrollo), secure será False.
+        # Si settings.DEBUG es False (producción), secure será True.
+        secure = False if settings.DEBUG else True
+
         response.set_cookie(
             COOKIE_NAME,
             str(refresh_token),
             httponly=True,
-            secure=secure,
+            secure=secure,  # <--- Aquí usamos la variable que definimos arriba
             samesite='Lax',
             max_age=max_age,
-            # ensure cookie path matches the refresh/logout endpoints
             path='/api/jwt/refresh/'
         )
 

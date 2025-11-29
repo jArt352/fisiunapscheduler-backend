@@ -1,7 +1,4 @@
 
-
-
-
 from rest_framework.routers import DefaultRouter
 from api.views import PersonCreateViewSet, GroupViewSet, AuthViewSet, JWTAuthViewSet, PlanImportViewSet, PlanListViewSet, SchoolViewSet, CourseUpdateViewSet, CourseViewSet, PlanAdminViewSet, AcademicPeriodCreateViewSet, AcademicPeriodListViewSet, AcademicPeriodUpdateViewSet, ShiftViewSet, CourseOfferingListViewSet, CourseOfferingGroupUpdateViewSet, CourseOfferingDetailViewSet, CourseGroupListViewSet
 from api.views.CourseOfferingManualAddViewSet import CourseOfferingManualAddViewSet
@@ -32,6 +29,23 @@ router.register(r'course-offerings/detail', CourseOfferingDetailViewSet, basenam
 router.register(r'course-groups', CourseGroupListViewSet, basename='course-groups')
 router.register(r'course-group-configs', CourseGroupConfigViewSet, basename='course-group-configs')
 router.register(r'course-groups-bulk', CourseGroupBulkCreateViewSet, basename='course-groups-bulk')
+# Endpoint para listar docentes
+from api.views.TeacherViewSet import TeacherViewSet
+router.register(r'teachers', TeacherViewSet, basename='teachers')
+
+# Preferencias y no disponibilidad docente
+from api.views.PreferenceViewSet import (
+	CourseSessionPolicyViewSet,
+	CourseDayPreferenceViewSet,
+	CourseTeacherPreferenceViewSet,
+	CourseShiftPreferenceViewSet,
+	TeacherUnavailabilityViewSet,
+)
+router.register(r'course-session-policies', CourseSessionPolicyViewSet, basename='course-session-policies')
+router.register(r'course-day-preferences', CourseDayPreferenceViewSet, basename='course-day-preferences')
+router.register(r'course-teacher-preferences', CourseTeacherPreferenceViewSet, basename='course-teacher-preferences')
+router.register(r'course-shift-preferences', CourseShiftPreferenceViewSet, basename='course-shift-preferences')
+router.register(r'teacher-unavailabilities', TeacherUnavailabilityViewSet, basename='teacher-unavailabilities')
 
 # Endpoint para agregar manualmente CourseOffering de tipo 'normal' y establecer número de grupos, curso por curso
 from api.views.CourseOfferingManualNormalWithGroupsSingleViewSet import CourseOfferingManualNormalWithGroupsSingleViewSet
