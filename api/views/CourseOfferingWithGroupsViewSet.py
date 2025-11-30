@@ -36,7 +36,7 @@ class CourseOfferingWithGroupsViewSet(viewsets.ViewSet):
             )
             # Establecer el número de grupos
             CourseGroupConfig.objects.update_or_create(
-                course_id=cid,
+                course_offering=co,
                 defaults={'num_groups': num_groups}
             )
             added.append(co)

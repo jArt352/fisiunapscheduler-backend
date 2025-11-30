@@ -26,7 +26,7 @@ class CourseOfferingManualNormalWithGroupsSingleViewSet(viewsets.ViewSet):
             course_id=course_id, academic_period=period, offering_type='normal'
         )
         CourseGroupConfig.objects.update_or_create(
-            course_id=course_id,
+            course_offering=co,
             defaults={'num_groups': num_groups}
         )
         data = CourseOfferingListSerializer(co).data
