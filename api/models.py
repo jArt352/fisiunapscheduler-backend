@@ -1,3 +1,5 @@
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.db import models
 from django.db import transaction
 from django.db.models.signals import pre_save, post_save
@@ -5,6 +7,9 @@ from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.db.models.signals import post_delete
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 # Apertura de periodo y fases
@@ -98,7 +103,7 @@ class CourseOffering(models.Model):
 	]
 
 	course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='offerings')
-	academic_period = models.ForeignKey('AcademicPeriod', on_delete=models.SET_NULL, null=True, blank=True, related_name='offerings')
+	academic_period = models.ForeignKey('AcademicPeriod', on_delete=models.CASCADE, related_name='offerings')
 	offering_type = models.CharField(max_length=20, choices=OFFERING_TYPES, default='normal')
 	notes = models.TextField(blank=True)
 
@@ -231,32 +236,37 @@ class CourseTeacherPreference(models.Model):
 	def __str__(self):
 		return f"{self.course.code} - {self.teacher.person} ({self.get_level_display()})"
 
+
+# --- NUEVO: CourseGroup apunta a CourseOffering ---
 class CourseGroup(models.Model):
-	"""Representa un grupo/ sección de un curso (varios grupos por curso)."""
-	course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='groups')
+	"""Representa un grupo/sección de una oferta de curso (varios grupos por oferta)."""
+	course_offering = models.ForeignKey('CourseOffering', on_delete=models.CASCADE, related_name='groups')
 	code = models.CharField(max_length=20)
 
 	class Meta:
-		unique_together = (('course', 'code'),)
+		unique_together = (('course_offering', 'code'),)
 
 	def __str__(self):
-		return f"{self.course.code}-{self.code}"
+		return f"{self.course_offering.course.code}-{self.code} ({self.course_offering.academic_period})"
 
 
 
+
+# --- NUEVO: Configuración de grupos por CourseOffering ---
 class CourseGroupConfig(models.Model):
-	"""Configuración separada de grupos para un curso.
+	"""Configuración separada de grupos para una oferta de curso.
 
-	Permite especificar cuántos grupos tendrá un curso sin modificar la tabla `Course`.
+	Permite especificar cuántos grupos tendrá una oferta de curso sin modificar la tabla `CourseOffering`.
 	"""
-	course = models.OneToOneField('Course', on_delete=models.CASCADE, related_name='group_config')
+	course_offering = models.OneToOneField('CourseOffering', on_delete=models.CASCADE, related_name='group_config')
 	num_groups = models.PositiveIntegerField(default=1)
 
 	def __str__(self):
-		return f"Config grupos {self.course.code}: {self.num_groups}"
+		return f"Config grupos {self.course_offering.course.code} {self.course_offering.academic_period}: {self.num_groups}"
 
 
-# --- Señales para crear/ajustar CourseGroup automáticamente basadas en CourseGroupConfig ---
+
+# --- Señales para crear/ajustar/eliminar CourseGroup automáticamente basadas en CourseGroupConfig ---
 @receiver(pre_save, sender=CourseGroupConfig)
 def courseconfig_pre_save(sender, instance, **kwargs):
 	if not instance.pk:
@@ -272,13 +282,19 @@ def courseconfig_pre_save(sender, instance, **kwargs):
 @receiver(post_save, sender=CourseGroupConfig)
 def courseconfig_post_save(sender, instance, created, **kwargs):
 	new = instance.num_groups
-	course = instance.course
+	course_offering = instance.course_offering
 	with transaction.atomic():
 		# Eliminar todos los grupos existentes para evitar duplicados
-		CourseGroup.objects.filter(course=course).delete()
+		CourseGroup.objects.filter(course_offering=course_offering).delete()
 		# Crear los grupos nuevos
 		for i in range(1, new + 1):
-			CourseGroup.objects.create(course=course, code=str(i))
+			CourseGroup.objects.create(course_offering=course_offering, code=str(i))
+
+# --- Señal para eliminar grupos cuando se elimina CourseGroupConfig ---
+@receiver(post_delete, sender=CourseGroupConfig)
+def courseconfig_post_delete(sender, instance, **kwargs):
+	course_offering = instance.course_offering
+	CourseGroup.objects.filter(course_offering=course_offering).delete()
 
 
 
@@ -466,3 +482,32 @@ class Shift(models.Model):
 		return f"{self.get_name_display()} ({self.start_time.strftime('%H:%M')}-{self.end_time.strftime('%H:%M')})"
 
 ## Modelo CourseTeacherPreferenceRequest eliminado
+
+# --- Lógica automática para crear CourseOffering según el periodo ---
+
+@receiver(post_save, sender=AcademicPeriod)
+def create_course_offerings_for_period(sender, instance, created, **kwargs):
+	if not created:
+		return
+	# Solo crear automáticamente para periodos I y II
+	if instance.period == "I":
+		# Ciclos impares
+		cursos = Course.objects.filter(cycle__gt=0).extra(where=["cycle %% 2 = 1"])
+	elif instance.period == "II":
+		# Ciclos pares
+		cursos = Course.objects.filter(cycle__gt=0).extra(where=["cycle %% 2 = 0"])
+	else:
+		# Periodo III: no crear nada automáticamente
+		return
+
+	# Crear CourseOffering y un grupo por cada curso filtrado
+	from api.models import CourseGroup
+	for curso in cursos:
+		offering, created = CourseOffering.objects.get_or_create(
+			course=curso,
+			academic_period=instance,
+			offering_type="normal"
+		)
+		# Crear un grupo por defecto si no existen grupos para este offering
+		if not offering.groups.exists():
+			CourseGroup.objects.create(course_offering=offering, code="1")

@@ -33,6 +33,6 @@ class AcademicPeriodCreateSerializer(serializers.ModelSerializer):
                     offering_type="normal"
                 )
                 # Crear grupo por defecto si no existe
-                if not CourseGroup.objects.filter(course=curso).exists():
-                    CourseGroup.objects.create(course=curso, code="1")
+                if not CourseGroup.objects.filter(course_offering__course=curso, course_offering=offering).exists():
+                    CourseGroup.objects.create(course_offering=offering, code="1")
         return period

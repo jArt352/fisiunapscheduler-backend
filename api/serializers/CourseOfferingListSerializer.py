@@ -16,4 +16,4 @@ class CourseOfferingListSerializer(serializers.ModelSerializer):
         ]
 
     def get_num_groups(self, obj):
-        return obj.course.groups.count()
+        return obj.groups.count()

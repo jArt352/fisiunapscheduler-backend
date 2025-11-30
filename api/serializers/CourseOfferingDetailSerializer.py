@@ -21,5 +21,5 @@ class CourseOfferingDetailSerializer(serializers.ModelSerializer):
                 'id': g.id,
                 'code': g.code
             }
-            for g in obj.course.groups.all()
+            for g in obj.groups.all()
         ]
