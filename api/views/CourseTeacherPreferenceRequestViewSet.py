@@ -1,3 +1,4 @@
+from rest_framework.permissions import AllowAny
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
@@ -9,7 +10,7 @@ from api.serializers.CourseTeacherPreferenceRequestSerializer import CourseTeach
 class CourseTeacherPreferenceRequestViewSet(viewsets.ModelViewSet):
     queryset = CourseTeacherPreferenceRequest.objects.all()
     serializer_class = CourseTeacherPreferenceRequestSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
         # El docente autenticado crea la solicitud

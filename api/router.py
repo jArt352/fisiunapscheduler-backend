@@ -1,3 +1,12 @@
+# Endpoint para listar personas
+from api.views.PersonViewSet import PersonViewSet
+
+# Endpoint para configuración global de horario
+
+# ...existing code...
+
+# Endpoint para configuración global de horario
+from api.views.GeneralScheduleConfigViewSet import GeneralScheduleConfigViewSet
 
 from rest_framework.routers import DefaultRouter
 from api.views import PersonCreateViewSet, GroupViewSet, AuthViewSet, JWTAuthViewSet, PlanImportViewSet, PlanListViewSet, SchoolViewSet, CourseUpdateViewSet, CourseViewSet, PlanAdminViewSet, AcademicPeriodCreateViewSet, AcademicPeriodListViewSet, AcademicPeriodUpdateViewSet, ShiftViewSet, CourseOfferingListViewSet, CourseOfferingGroupUpdateViewSet, CourseOfferingDetailViewSet, CourseGroupListViewSet
@@ -29,6 +38,8 @@ router.register(r'course-offerings/detail', CourseOfferingDetailViewSet, basenam
 router.register(r'course-groups', CourseGroupListViewSet, basename='course-groups')
 router.register(r'course-group-configs', CourseGroupConfigViewSet, basename='course-group-configs')
 router.register(r'course-groups-bulk', CourseGroupBulkCreateViewSet, basename='course-groups-bulk')
+router.register(r'general-schedule-config', GeneralScheduleConfigViewSet, basename='general-schedule-config')
+
 # Endpoint para listar docentes
 from api.views.TeacherViewSet import TeacherViewSet
 router.register(r'teachers', TeacherViewSet, basename='teachers')
@@ -66,3 +77,4 @@ router.register(r'course-offerings-with-groups', CourseOfferingWithGroupsViewSet
 # Endpoint para listar cursos que no abrieron en tipo 'normal'
 from api.views.CoursesNotOpenedNormalViewSet import CoursesNotOpenedNormalViewSet
 router.register(r'courses-not-opened-normal', CoursesNotOpenedNormalViewSet, basename='courses-not-opened-normal')
+router.register(r'persons', PersonViewSet, basename='persons')

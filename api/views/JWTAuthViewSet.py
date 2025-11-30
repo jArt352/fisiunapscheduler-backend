@@ -4,7 +4,7 @@ from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth import authenticate
@@ -14,11 +14,7 @@ COOKIE_NAME = 'refresh_token'
 
 class JWTAuthViewSet(viewsets.ViewSet):
     authentication_classes = [JWTAuthentication]
-
-    def get_permissions(self):
-        if self.action in ['login', 'refresh']:
-            return [AllowAny()]
-        return [IsAuthenticated()]
+    permission_classes = [AllowAny]
 
     def _set_refresh_cookie(self, response, refresh_token):
         # Calculamos el tiempo de vida

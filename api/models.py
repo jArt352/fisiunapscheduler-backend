@@ -1,4 +1,3 @@
-
 from django.db import models
 from django.db import transaction
 from django.db.models.signals import pre_save, post_save
@@ -29,8 +28,24 @@ class AcademicPeriod(models.Model):
 		return f"{self.year} - {self.period}"
 
 
-## Eliminado PeriodPhase: ahora solo se usan los campos de AcademicPeriod
+class GeneralScheduleConfig(models.Model):
+	"""Configuración global de días y rango horario permitido para todos los cursos."""
+	DAY_CHOICES = [
+		("lunes", "Lunes"),
+		("martes", "Martes"),
+		("miércoles", "Miércoles"),
+		("jueves", "Jueves"),
+		("viernes", "Viernes"),
+		("sábado", "Sábado"),
+		("domingo", "Domingo"),
+	]
+	day_name = models.CharField(max_length=50, choices=DAY_CHOICES, help_text="Días habilitados separados por comas, ej: mon,tue,wed")
+	start_time = models.TimeField(help_text="Hora de inicio global permitida, ej: 06:00")
+	end_time = models.TimeField(help_text="Hora de fin global permitida, ej: 23:00")
+	updated_at = models.DateTimeField(auto_now=True)
 
+	def __str__(self):
+		return f"{self.day_name} : {self.start_time} - {self.end_time}"
 
 class Site(models.Model):
 	name = models.CharField(max_length=200, unique=True)
@@ -361,10 +376,44 @@ class TeacherUnavailability(models.Model):
 	class Meta:
 		ordering = ['teacher', 'day', 'start_time']
 
+
 	def clean(self):
 		# Validación básica: end_time debe ser mayor que start_time
 		if self.end_time <= self.start_time:
 			raise ValidationError({'end_time': 'La hora de fin debe ser posterior a la hora de inicio.'})
+
+		# Validación de solapamiento de bloques para el mismo docente y día
+		from datetime import datetime, timedelta
+		overlapping = TeacherUnavailability.objects.filter(
+			teacher=self.teacher,
+			day=self.day
+		).exclude(pk=self.pk).filter(
+			start_time__lt=self.end_time,
+			end_time__gt=self.start_time
+		)
+		if overlapping.exists():
+			raise ValidationError({'__all__': 'Existe un bloque de indisponibilidad que se solapa con este horario para el mismo día.'})
+
+		# Validación de rango permitido por GeneralScheduleConfig
+		from api.models import GeneralScheduleConfig
+		# Buscar la config global para el día correspondiente
+		config = GeneralScheduleConfig.objects.filter(day_name__iexact=self.get_day_display()).first()
+		if config:
+			if self.start_time < config.start_time or self.end_time > config.end_time:
+				raise ValidationError({'__all__': f'El rango de horas debe estar entre {config.start_time.strftime("%H:%M")} y {config.end_time.strftime("%H:%M")} para {config.day_name}.'})
+
+		# Validación de horas máximas de indisponibilidad
+		total_seconds = 0
+		for unav in TeacherUnavailability.objects.filter(teacher=self.teacher).exclude(pk=self.pk):
+			delta = (datetime.combine(datetime.min, unav.end_time) - datetime.combine(datetime.min, unav.start_time))
+			total_seconds += delta.total_seconds()
+		# Sumar las horas de este registro
+		this_delta = (datetime.combine(datetime.min, self.end_time) - datetime.combine(datetime.min, self.start_time))
+		total_seconds += this_delta.total_seconds()
+		total_hours = total_seconds / 3600
+		max_hours = self.teacher.max_unavailability_hours
+		if max_hours > 0 and total_hours > max_hours:
+			raise ValidationError({'__all__': f'La suma de horas de indisponibilidad ({total_hours:.2f}) supera el máximo permitido ({max_hours}) para este docente.'})
 
 	def __str__(self):
 		return f"{self.teacher.person} - {self.get_day_display()} {self.start_time.strftime('%H:%M')}–{self.end_time.strftime('%H:%M')}"

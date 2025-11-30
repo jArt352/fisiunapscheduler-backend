@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
@@ -21,11 +21,7 @@ class AuthViewSet(viewsets.ViewSet):
     """
 
     authentication_classes = [SessionAuthentication, TokenAuthentication]
-
-    def get_permissions(self):
-        if self.action == 'login':
-            return [AllowAny()]
-        return [IsAuthenticated()]
+    permission_classes = [AllowAny]
 
     @action(detail=False, methods=['post'])
     def login(self, request):

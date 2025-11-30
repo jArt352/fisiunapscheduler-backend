@@ -73,5 +73,19 @@ class CourseShiftPreferenceViewSet(viewsets.ModelViewSet):
     serializer_class = CourseShiftPreferenceSerializer
 
 class TeacherUnavailabilityViewSet(viewsets.ModelViewSet):
+
     queryset = TeacherUnavailability.objects.all()
     serializer_class = TeacherUnavailabilitySerializer
+
+    from rest_framework.decorators import action
+    from rest_framework.response import Response
+
+    @action(detail=False, methods=['get'], url_path='teacher/(?P<teacher_id>[^/.]+)')
+    def by_teacher(self, request, teacher_id=None):
+        qs = self.get_queryset().filter(teacher_id=teacher_id)
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)

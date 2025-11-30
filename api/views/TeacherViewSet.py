@@ -1,19 +1,21 @@
 
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from api.models import Teacher
 from api.serializers import TeacherSerializer
 
 
+
 class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TeacherSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         queryset = Teacher.objects.select_related('person').all()
-        person_id = self.request.query_params.get('person')
+        # Permitir filtrar por 'person' o 'personaid' (ambos aceptados)
+        person_id = self.request.query_params.get('person') or self.request.query_params.get('personaid')
         if person_id:
             queryset = queryset.filter(person_id=person_id)
         return queryset
