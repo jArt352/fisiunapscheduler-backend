@@ -1,10 +1,9 @@
 from rest_framework import viewsets
-from api.models import CourseSessionPolicy, CourseDayPreference, CourseTeacherPreference, CourseShiftPreference, TeacherUnavailability
+from api.models import CourseSessionPolicy, CourseDayPreference, CourseTeacherPreference, TeacherUnavailability
 from api.serializers.PreferenceSerializers import (
     CourseSessionPolicySerializer,
     CourseDayPreferenceSerializer,
     CourseTeacherPreferenceSerializer,
-    CourseShiftPreferenceSerializer,
     TeacherUnavailabilitySerializer,
 )
 
@@ -33,9 +32,7 @@ class CourseDayPreferenceViewSet(viewsets.ModelViewSet):
                 'course_id': course_data['id'],
                 'course_name': course_data['name'],
                 'day': pref.get_day_display(),
-                'day_value': pref.day,
-                'preference': pref.get_preference_display(),
-                'preference_value': pref.preference
+                'day_value': pref.day
             })
         return self.get_paginated_response(result)
 
@@ -63,14 +60,10 @@ class CourseTeacherPreferenceViewSet(viewsets.ModelViewSet):
                 'id': pref.id,
                 'course': course_data,
                 'teacher': teacher_data,
-                'level': pref.level,
                 'notes': pref.notes
             })
         return self.get_paginated_response(result)
 
-class CourseShiftPreferenceViewSet(viewsets.ModelViewSet):
-    queryset = CourseShiftPreference.objects.all()
-    serializer_class = CourseShiftPreferenceSerializer
 
 class TeacherUnavailabilityViewSet(viewsets.ModelViewSet):
 

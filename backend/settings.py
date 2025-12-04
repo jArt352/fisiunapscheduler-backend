@@ -54,7 +54,7 @@ INSTALLED_APPS = [
 INSTALLED_APPS += [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'django_extensions',
+    # 'django_extensions',  # Comentado temporalmente
 ]
 
 # Django REST Framework settings

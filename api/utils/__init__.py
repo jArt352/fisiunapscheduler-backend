@@ -1,3 +1,0 @@
-"""
-Utilidades del módulo API
-"""

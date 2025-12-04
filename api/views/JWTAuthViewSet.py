@@ -213,19 +213,27 @@ class JWTAuthViewSet(viewsets.ViewSet):
             if not person.roles.filter(name=role_name).exists():
                 return Response({'detail': 'No tienes permisos para este rol.'}, status=status.HTTP_403_FORBIDDEN)
             
-            # 2. Generamos nuevo token
+            # 2. Generamos nuevo refresh token
             refresh = RefreshToken.for_user(user)
             
-            # 3. 🔥 CRÍTICO: Inyectamos el rol activo en el nuevo token 🔥
+            # 3. 🔥 CRÍTICO: Inyectamos el rol activo en el refresh token 🔥
             refresh['active_role'] = role_name 
-            refresh['roles'] = [r.name for r in person.roles.all()] # Opcional pero útil
+            refresh['roles'] = [r.name for r in person.roles.all()]
             
+            # 4. Generamos access token (heredará active_role del refresh)
             access = str(refresh.access_token)
             
-            return Response({
+            # 5. Preparamos la respuesta con cookie actualizada
+            response = Response({
                 'detail': 'Role switched successfully', 
-                'access': access # <--- NextAuth necesita esto
+                'access': access,
+                'active_role': role_name  # Enviamos confirmación explícita
             }, status=status.HTTP_200_OK)
+            
+            # 6. Actualizamos la cookie de refresh token
+            self._set_refresh_cookie(response, refresh)
+            
+            return response
 
         except Person.DoesNotExist:
             return Response({'detail': 'Person profile not found'}, status=status.HTTP_404_NOT_FOUND)

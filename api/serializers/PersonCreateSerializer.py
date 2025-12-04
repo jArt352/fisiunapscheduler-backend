@@ -123,7 +123,7 @@ class PersonCreateSerializer(serializers.ModelSerializer):
                 SchoolDirector.objects.create(school=school, person=person, start_date=start_date or None, end_date=end_date or None)
 
             # Department head
-            if 'department_chief' in role_names or 'department_head' in role_names:
+            if 'department_head' in role_names:
                 school_id = department_head_data.get('school_id') or department_head_data.get('school')
                 dept_name = department_head_data.get('department_name') or department_head_data.get('department')
                 start_date = department_head_data.get('start_date')

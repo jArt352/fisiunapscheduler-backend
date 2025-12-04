@@ -1,18 +1,13 @@
-# Endpoint para listar personas
 from api.views.PersonViewSet import PersonViewSet
 
-# Endpoint para configuración global de horario
-
-# ...existing code...
-
-# Endpoint para configuración global de horario
 from api.views.GeneralScheduleConfigViewSet import GeneralScheduleConfigViewSet
 
 from rest_framework.routers import DefaultRouter
-from api.views import PersonCreateViewSet, GroupViewSet, AuthViewSet, JWTAuthViewSet, PlanImportViewSet, PlanListViewSet, SchoolViewSet, CourseUpdateViewSet, CourseViewSet, PlanAdminViewSet, AcademicPeriodCreateViewSet, AcademicPeriodListViewSet, AcademicPeriodUpdateViewSet, ShiftViewSet, CourseOfferingListViewSet, CourseOfferingGroupUpdateViewSet, CourseOfferingDetailViewSet, CourseGroupListViewSet
+from api.views import PersonCreateViewSet, GroupViewSet, AuthViewSet, JWTAuthViewSet, PlanImportViewSet, PlanListViewSet, SchoolViewSet, CourseUpdateViewSet, CourseViewSet, PlanAdminViewSet, AcademicPeriodCreateViewSet, AcademicPeriodListViewSet, AcademicPeriodUpdateViewSet, CourseOfferingListViewSet, CourseOfferingGroupUpdateViewSet, CourseOfferingDetailViewSet, CourseGroupListViewSet
 from api.views.CourseOfferingManualAddViewSet import CourseOfferingManualAddViewSet
 from api.views.CourseGroupConfigViewSet import CourseGroupConfigViewSet
 from api.views.CourseGroupBulkCreateViewSet import CourseGroupBulkCreateViewSet
+from api.views.RoomViewSet import RoomViewSet
 
 router = DefaultRouter()
 router.register(r'persons/create', PersonCreateViewSet, basename='person-create')
@@ -31,7 +26,6 @@ router.register(r'plans-admin', PlanAdminViewSet, basename='plans-admin')
 router.register(r'academic-periods/create', AcademicPeriodCreateViewSet, basename='academic-periods-create')
 router.register(r'academic-periods', AcademicPeriodListViewSet, basename='academic-periods')
 router.register(r'academic-periods/update', AcademicPeriodUpdateViewSet, basename='academic-periods-update')
-router.register(r'shifts', ShiftViewSet, basename='shifts')
 router.register(r'course-offerings', CourseOfferingListViewSet, basename='course-offerings')
 router.register(r'course-offerings/groups', CourseOfferingGroupUpdateViewSet, basename='course-offerings-groups')
 router.register(r'course-offerings/detail', CourseOfferingDetailViewSet, basename='course-offerings-detail')
@@ -39,8 +33,10 @@ router.register(r'course-groups', CourseGroupListViewSet, basename='course-group
 router.register(r'course-group-configs', CourseGroupConfigViewSet, basename='course-group-configs')
 router.register(r'course-groups-bulk', CourseGroupBulkCreateViewSet, basename='course-groups-bulk')
 router.register(r'general-schedule-config', GeneralScheduleConfigViewSet, basename='general-schedule-config')
+router.register(r'rooms', RoomViewSet, basename='rooms')
 
-# Endpoint para listar docentes
+
+
 from api.views.TeacherViewSet import TeacherViewSet
 router.register(r'teachers', TeacherViewSet, basename='teachers')
 
@@ -49,13 +45,11 @@ from api.views.PreferenceViewSet import (
 	CourseSessionPolicyViewSet,
 	CourseDayPreferenceViewSet,
 	CourseTeacherPreferenceViewSet,
-	CourseShiftPreferenceViewSet,
 	TeacherUnavailabilityViewSet,
 )
 router.register(r'course-session-policies', CourseSessionPolicyViewSet, basename='course-session-policies')
 router.register(r'course-day-preferences', CourseDayPreferenceViewSet, basename='course-day-preferences')
 router.register(r'course-teacher-preferences', CourseTeacherPreferenceViewSet, basename='course-teacher-preferences')
-router.register(r'course-shift-preferences', CourseShiftPreferenceViewSet, basename='course-shift-preferences')
 router.register(r'teacher-unavailabilities', TeacherUnavailabilityViewSet, basename='teacher-unavailabilities')
 
 # Endpoint para agregar manualmente CourseOffering de tipo 'normal' y establecer número de grupos, curso por curso

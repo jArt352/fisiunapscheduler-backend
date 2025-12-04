@@ -5,7 +5,6 @@ from .JWTAuthViewSet import JWTAuthViewSet
 from .PlanImportViewSet import PlanImportViewSet
 from .AcademicPeriodListViewSet import AcademicPeriodListViewSet
 from .AcademicPeriodUpdateViewSet import AcademicPeriodUpdateViewSet
-from .ShiftViewSet import ShiftViewSet
 from .PlanListViewSet import PlanListViewSet
 from .SchoolViewSet import SchoolViewSet
 from .CourseUpdateViewSet import CourseUpdateViewSet

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from api.models import CourseSessionPolicy, CourseDayPreference, CourseTeacherPreference, CourseShiftPreference, TeacherUnavailability
+from api.models import CourseSessionPolicy, CourseDayPreference, CourseTeacherPreference, TeacherUnavailability
 from django.core.exceptions import ValidationError
 
 class CourseSessionPolicySerializer(serializers.ModelSerializer):
@@ -17,10 +17,7 @@ class CourseTeacherPreferenceSerializer(serializers.ModelSerializer):
         model = CourseTeacherPreference
         fields = '__all__'
 
-class CourseShiftPreferenceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CourseShiftPreference
-        fields = '__all__'
+
 
 
 class TeacherUnavailabilitySerializer(serializers.ModelSerializer):
